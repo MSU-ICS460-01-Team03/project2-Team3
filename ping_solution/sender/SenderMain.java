@@ -1,4 +1,4 @@
-package sender;
+package ping_solution.sender;
 
 public class SenderMain {
 

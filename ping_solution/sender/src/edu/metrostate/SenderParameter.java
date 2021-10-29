@@ -9,7 +9,7 @@ public class SenderParameter {
     int timeoutInterval = 3000;
     String receiverIpAddress = "localhost";
     int receiverPort = 58973;
-    double percentDrop = 0.25;
+    double percentError = 0.25;
 
     public SenderParameter(String[] args) throws ParameterException {
         getArgs(args);
@@ -41,7 +41,7 @@ public class SenderParameter {
                 }
             } else if (args[i].equals("-d")) {
                 if (args[i + 1].matches("\\d+\\.\\d+")) {
-                    percentDrop = Double.parseDouble(args[i + 1]);
+                    percentError = Double.parseDouble(args[i + 1]);
                 } else {
                     throw new ParameterException("Type wrong -d  percent drop: " + args[i + 1]);
                 }
@@ -60,7 +60,7 @@ public class SenderParameter {
             throw new ParameterException("Type port number wrong format: " + args[args.length - 1]);
         }
         if (args[args.length - 2].matches("\\d{1,3}:\\d{1,3}:\\d{1,3}:\\d{1,3}")) {
-            fileName = args[args.length - 2];
+            receiverIpAddress = args[args.length - 2];
         } else if (args[args.length - 2].matches("localhost")) {
             receiverIpAddress = "localhost";
         } else {
@@ -72,7 +72,7 @@ public class SenderParameter {
     @Override
     public String toString() {
         return "SenderParameter [fileName=" + fileName + ", filePath=" + filePath + ", packetSize=" + packetSize
-                + ", percentDrop=" + percentDrop + ", receiverIpAddress=" + receiverIpAddress + ", receiverPort="
+                + ", percentError=" + percentError + ", receiverIpAddress=" + receiverIpAddress + ", receiverPort="
                 + receiverPort + ", senderIpAddress=" + senderIpAddress + ", senderPort=" + senderPort
                 + ", timeoutInterval=" + timeoutInterval + "]";
     }

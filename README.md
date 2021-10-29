@@ -1,1 +1,1 @@
-# project2-stop-and-wait
+# project2-stop-and-wait for Ping.

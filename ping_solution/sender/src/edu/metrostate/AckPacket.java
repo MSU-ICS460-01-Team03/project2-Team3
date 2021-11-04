@@ -1,38 +1,49 @@
 package edu.metrostate;
 
-public class AckPacket {
-    private short cksum; // 16-bit 2-byte
-    private short len; // 16-bit 2-byte
-    private int ackno; // 32-bit 4-byte
+import java.io.Serializable;
 
-    public AckPacket(short cksum, short len, int ackno) {
-        this.cksum = cksum;
+public class AckPacket implements Serializable {
+    private static final long serialVersionUID = 1L;
+    protected short cksum; // 16-bit 2-byte
+    protected short len; // 16-bit 2-byte
+    protected int ackno; // 32-bit 4-byte
+
+    public AckPacket(short len, int ackno, String senderIP, String receiverIP) {
         this.len = len;
         this.ackno = ackno;
+        generateCksum(senderIP, receiverIP);
+    }
+
+    protected void generateCksum(String senderIP, String receiverIP) {
+        short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
+        cksum += (short) (((1 << nob) - 1) ^ len);
+        nob = (short) ((Math.floor(Math.log(ackno) / Math.log(2))) + 1);
+        cksum += (short) (((1 << nob) - 1) ^ ackno);
+    }
+
+    public boolean isError(String senderIP, String receiverIP) {
+        short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
+        short sum = (short) (((1 << nob) - 1) ^ len);
+        nob = (short) ((Math.floor(Math.log(ackno) / Math.log(2))) + 1);
+        sum += (short) (((1 << nob) - 1) ^ ackno);
+        nob = (short) ((Math.floor(Math.log(cksum) / Math.log(2))) + 1);
+        sum += (short) (((1 << nob) - 1) ^ cksum);
+        nob = (short) ((Math.floor(Math.log(sum) / Math.log(2))) + 1);
+        sum = (short) (((1 << nob) - 1) ^ sum);
+        // System.out.println(sum);
+        return sum != 0;
     }
 
     public short getCksum() {
         return cksum;
     }
 
-    public void setCksum(short cksum) {
-        this.cksum = cksum;
-    }
-
     public short getLen() {
         return len;
     }
 
-    public void setLen(short len) {
-        this.len = len;
-    }
-
     public int getAckno() {
         return ackno;
-    }
-
-    public void setAckno(int ackno) {
-        this.ackno = ackno;
     }
 
     @Override

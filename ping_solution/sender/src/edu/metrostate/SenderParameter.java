@@ -5,8 +5,8 @@ public class SenderParameter {
     int senderPort = 58972;
     String filePath = System.getProperty("user.dir") + "/";
     String fileName = "panda.jpg";
-    int packetSize = 100;
-    int timeoutInterval = 3000;
+    int packetSize = 1024;
+    int timeoutInterval = 2000;
     String receiverIpAddress = "localhost";
     int receiverPort = 58973;
     double percentError = 0.25;

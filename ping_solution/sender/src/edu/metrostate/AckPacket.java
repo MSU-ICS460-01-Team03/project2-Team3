@@ -4,24 +4,24 @@ import java.io.Serializable;
 
 public class AckPacket implements Serializable {
     private static final long serialVersionUID = 1L;
-    protected short cksum; // 16-bit 2-byte
-    protected short len; // 16-bit 2-byte
-    protected int ackno; // 32-bit 4-byte
+    short cksum; // 16-bit 2-byte
+    short len; // 16-bit 2-byte
+    int ackno; // 32-bit 4-byte
 
-    public AckPacket(short len, int ackno, String senderIP, String receiverIP) {
+    public AckPacket(short len, int ackno) {
         this.len = len;
         this.ackno = ackno;
-        generateCksum(senderIP, receiverIP);
+        generateCksum();
     }
 
-    protected void generateCksum(String senderIP, String receiverIP) {
+    protected void generateCksum() {
         short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
         cksum += (short) (((1 << nob) - 1) ^ len);
         nob = (short) ((Math.floor(Math.log(ackno) / Math.log(2))) + 1);
         cksum += (short) (((1 << nob) - 1) ^ ackno);
     }
 
-    public boolean isError(String senderIP, String receiverIP) {
+    public boolean isError() {
         short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
         short sum = (short) (((1 << nob) - 1) ^ len);
         nob = (short) ((Math.floor(Math.log(ackno) / Math.log(2))) + 1);
@@ -32,18 +32,6 @@ public class AckPacket implements Serializable {
         sum = (short) (((1 << nob) - 1) ^ sum);
         // System.out.println(sum);
         return sum != 0;
-    }
-
-    public short getCksum() {
-        return cksum;
-    }
-
-    public short getLen() {
-        return len;
-    }
-
-    public int getAckno() {
-        return ackno;
     }
 
     @Override

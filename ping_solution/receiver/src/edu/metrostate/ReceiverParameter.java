@@ -6,6 +6,7 @@ public class ReceiverParameter {
     String receiverIpAddress = "localhost";
     int receiverPort = 58973;
     double percentError = 0.2;
+    int packetSize = 500;
 
     public ReceiverParameter(String[] args) throws ParameterException {
         getArgs(args);

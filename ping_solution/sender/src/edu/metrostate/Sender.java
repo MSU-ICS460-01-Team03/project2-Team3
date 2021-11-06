@@ -12,26 +12,17 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
-import javax.xml.crypto.Data;
 
 public class Sender {
 
     public static void main(String[] args) throws IOException, ParameterException, ClassNotFoundException,
             FileNotFoundException, InterruptedException {
         SenderParameter sp = new SenderParameter(args);
-        // System.out.println(sp);
-        // DataPacket dp;
         int count = 0;
         InetAddress address = InetAddress.getByName(sp.receiverIpAddress);
-        // System.out.println(dp);
-        // System.out.println(dp.isError("", ""));
-        // AckPacket ack = new AckPacket((short) 0, (short) 0, 1);
-        // System.out.println(ap);
-        // byte[] sendData = new byte[500];
         DatagramSocket sock = null;
-        // DatagramPacket sendPack;
         ByteArrayOutputStream bos = null;
         ObjectOutputStream oos = null;
         ByteArrayInputStream bais = null;
@@ -49,28 +40,45 @@ public class Sender {
 
             fis = new FileInputStream(myFile);
 
-            int i = 0;
+            int i = 1;
 
             while ((count = fis.read(data)) != -1) {
-
-                // DataPacket dp = ;
-
                 sendPacks.add(new DataPacket((short) (count + 12), i, i, data.clone()));
                 i++;
             }
-            for (DataPacket pack : sendPacks) {
-                bos = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(bos);
-                oos.writeObject(pack);
-                oos.flush();
-                byte[] sendData = bos.toByteArray();
-                DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.receiverPort);
-                sock.send(sendPack);
-                Thread.sleep(50);
+            Iterator<DataPacket> iter = sendPacks.iterator();
+            DataPacket dp = iter.next();
+            bos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bos);
+            oos.writeObject(dp);
+            oos.flush();
+            byte[] firstSendData = bos.toByteArray();
+            DatagramPacket firstSendPack = new DatagramPacket(firstSendData, firstSendData.length, address,
+                    sp.receiverPort);
+            sock.send(firstSendPack);
+            while (iter.hasNext()) {
+                DatagramPacket inPack = new DatagramPacket(data, data.length);
+                sock.receive(inPack);
+
+                byte[] recData = inPack.getData();
+                bais = new ByteArrayInputStream(recData);
+                ois = new ObjectInputStream(bais);
+                AckPacket ack = (AckPacket) ois.readObject();
+                if (!ack.isError()) {
+                    dp = iter.next();
+                    bos = new ByteArrayOutputStream();
+                    oos = new ObjectOutputStream(bos);
+                    oos.writeObject(dp);
+                    oos.flush();
+                    byte[] sendData = bos.toByteArray();
+                    DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.receiverPort);
+                    sock.send(sendPack);
+
+                }
+                Thread.sleep(25);
             }
 
-            DataPacket dp = new DataPacket((short) 0, 0, 0, new byte[0]);
-            System.out.println(dp);
+            dp = new DataPacket((short) 0, 0, 0, new byte[0]);
             bos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bos);
             oos.writeObject(dp);
@@ -78,15 +86,7 @@ public class Sender {
             byte[] ata = bos.toByteArray();
             DatagramPacket sendPack2 = new DatagramPacket(ata, ata.length, address, sp.receiverPort);
             sock.send(sendPack2);
-
-            // DatagramPacket inPack = new DatagramPacket(data, data.length);
-            // sock.receive(inPack);
-            // byte[] recData = inPack.getData();
-            // bais = new ByteArrayInputStream(recData);
-            // ois = new ObjectInputStream(bais);
-            // AckPacket ack = (AckPacket) ois.readObject();
-            // System.out.println(ack);
-            // System.out.println(ack.isError());
+            System.out.println("Sent! success.");
 
         } finally {
             if (sock != null)

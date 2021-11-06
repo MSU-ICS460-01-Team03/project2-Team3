@@ -3,10 +3,14 @@ package edu.metrostate;
 public class ReceiverParameter {
 
     String filePath = System.getProperty("user.dir") + "/";
+    String fileName = "panda.jpg";
     String receiverIpAddress = "localhost";
+    String senderIpAddress = "localhost";
     int receiverPort = 58973;
+    int senderPort = 58972;
     double percentError = 0.2;
     int packetSize = 500;
+    int timeoutInterval = 2000;
 
     public ReceiverParameter(String[] args) throws ParameterException {
         getArgs(args);

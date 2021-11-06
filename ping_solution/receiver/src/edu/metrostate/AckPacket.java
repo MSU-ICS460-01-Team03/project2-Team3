@@ -22,6 +22,10 @@ public class AckPacket implements Serializable {
     }
 
     public boolean isError() {
+        if (cksum == 0)
+            return false;
+        if (cksum == 1)
+            return true;
         short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
         short sum = (short) (((1 << nob) - 1) ^ len);
         nob = (short) ((Math.floor(Math.log(ackno) / Math.log(2))) + 1);
@@ -30,7 +34,6 @@ public class AckPacket implements Serializable {
         sum += (short) (((1 << nob) - 1) ^ cksum);
         nob = (short) ((Math.floor(Math.log(sum) / Math.log(2))) + 1);
         sum = (short) (((1 << nob) - 1) ^ sum);
-        // System.out.println(sum);
         return sum != 0;
     }
 

@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 public class Receiver {
     public static void main(String[] args)
@@ -15,19 +16,16 @@ public class Receiver {
         ReceiverParameter sp = new ReceiverParameter(args);
         byte[] data = new byte[1024];
         // System.out.println(sp);
-        // DataPacket dp = new DataPacket((short) 0, (short) 0, 0, 0, new byte[100]);
-        // System.out.println(dp);
-        // AckPacket ack = new AckPacket((short) 23, 1);
-
         DatagramSocket sock = null;
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;
         ByteArrayOutputStream bos = null;
         ObjectOutputStream oos = null;
         FileOutputStream fos = null;
+        InetAddress address = InetAddress.getByName(sp.senderIpAddress);
         try {
             sock = new DatagramSocket(sp.receiverPort);
-            String fileStr = sp.filePath + "pandas.jpg";
+            String fileStr = sp.filePath + sp.fileName;
             fos = new FileOutputStream(fileStr);
 
             boolean flag = true;
@@ -45,13 +43,23 @@ public class Receiver {
                 if (dp.data.length != 0) {
                     fos.write(dp.data, 0, dp.len - 12);
                     fos.flush();
+
                 } else {
                     flag = false;
                 }
-                Thread.sleep(50);
+
+                AckPacket ack = new AckPacket((short) 8, dp.seqno);
+                bos = new ByteArrayOutputStream();
+                oos = new ObjectOutputStream(bos);
+                oos.writeObject(ack);
+                oos.flush();
+                byte[] sendData = bos.toByteArray();
+                DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.senderPort);
+                sock.send(sendPack);
+                Thread.sleep(25);
             }
 
-            System.out.println("success!");
+            System.out.println("Received success!");
         } finally {
 
             if (fos != null)

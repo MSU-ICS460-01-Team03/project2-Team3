@@ -15,16 +15,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Sender {
+public class Sender_ {
 
     public static void main(String[] args) throws IOException, ParameterException, ClassNotFoundException,
             FileNotFoundException, InterruptedException {
         SenderParameter sp = new SenderParameter(args);
-        // System.out.println(sp);
-        // PrintEachPacket.datagramSendPrint(PrintEachPacket.SENDING, 1, 10, 1000,
-        // PrintEachPacket.SENT);
-        // PrintEachPacket.ackReceivedPrint(2, PrintEachPacket.DROP);
-        // PrintEachPacket.timeOutPrint(3);
         int count = 0;
         InetAddress address = InetAddress.getByName(sp.receiverIpAddress);
         DatagramSocket sock = null;
@@ -61,7 +56,6 @@ public class Sender {
             DatagramPacket firstSendPack = new DatagramPacket(firstSendData, firstSendData.length, address,
                     sp.receiverPort);
             sock.send(firstSendPack);
-            int seq = 1;
             while (iter.hasNext()) {
                 DatagramPacket inPack = new DatagramPacket(data, data.length);
                 sock.receive(inPack);
@@ -79,9 +73,7 @@ public class Sender {
                     byte[] sendData = bos.toByteArray();
                     DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.receiverPort);
                     sock.send(sendPack);
-                    PrintEachPacket.datagramSendPrint(PrintEachPacket.SENDING, seq, 0, sp.packetSize * seq,
-                            PrintEachPacket.SENT);
-                    seq++;
+
                 }
                 Thread.sleep(25);
             }

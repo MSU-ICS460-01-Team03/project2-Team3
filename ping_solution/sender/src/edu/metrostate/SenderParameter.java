@@ -4,7 +4,7 @@ public class SenderParameter {
     String senderIpAddress = "localhost";
     int senderPort = 58972;
     String filePath = System.getProperty("user.dir") + "/";
-    String fileName = "panda.jpg";
+    String fileName = "rabbit.jpg";
     int packetSize = 500;
     int timeoutInterval = 2000;
     String receiverIpAddress = "localhost";

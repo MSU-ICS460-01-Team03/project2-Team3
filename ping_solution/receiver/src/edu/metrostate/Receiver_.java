@@ -10,16 +10,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class Receiver {
+public class Receiver_ {
     public static void main(String[] args)
             throws IOException, ParameterException, ClassNotFoundException, InterruptedException {
         ReceiverParameter sp = new ReceiverParameter(args);
-        // PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, 3,
-        // PrintEachPacket.RECV);
-        // PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, 3,
-        // PrintEachPacket.NOT_SEQ);
-        // System.out.println(sp);
-
         byte[] data = new byte[1024];
         // System.out.println(sp);
         DatagramSocket sock = null;
@@ -49,7 +43,7 @@ public class Receiver {
                 if (dp.data.length != 0) {
                     fos.write(dp.data, 0, dp.len - 12);
                     fos.flush();
-                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.RECV);
+
                 } else {
                     flag = false;
                 }
@@ -62,7 +56,6 @@ public class Receiver {
                 byte[] sendData = bos.toByteArray();
                 DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.senderPort);
                 sock.send(sendPack);
-                PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.SENT);
                 Thread.sleep(25);
             }
 

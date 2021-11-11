@@ -41,19 +41,21 @@ public class Sender {
             SenderHelper.sendDatagramPacket(sock, dp, sp, bos, oos);
             while (iter.hasNext()) {
                 AckPacket ack = SenderHelper.receiveAck(sock, sp, bais, ois);
-                System.out.println(ack.ackno);
-                System.out.println(dp.seqno);
+                // System.out.println(ack.ackno);
+                // System.out.println(dp.seqno);
                 if (ack != null && !ack.isError() && ack.ackno == dp.seqno) {
                     dp = iter.next();
-                    // if (errs.contains(dp.seqno)) {
-                    // dp.cksum = 1;
-                    // }
+                    if (errs.contains(dp.seqno)) {
+                        dp.cksum = 1;
+                        // System.out.println(dp.seqno);
+                    }
                     PrintEachPacket.datagramSendPrint(PrintEachPacket.SENDING, dp.seqno, dp.seqno,
                             sp.packetSize * dp.seqno, PrintEachPacket.SENT);
                     SenderHelper.sendDatagramPacket(sock, dp, sp, bos, oos);
                 } else { // } if (ack.ackno != dp.seqno) {
                     PrintEachPacket.datagramSendPrint(PrintEachPacket.ReSend, dp.seqno, dp.seqno,
                             sp.packetSize * dp.seqno, PrintEachPacket.SENT);
+                    dp.cksum = 0;
                     SenderHelper.sendDatagramPacket(sock, dp, sp, bos, oos);
                 }
 

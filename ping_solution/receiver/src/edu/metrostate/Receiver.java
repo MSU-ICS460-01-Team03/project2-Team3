@@ -39,13 +39,13 @@ public class Receiver {
                 DataPacket dp = ReceiverHelper.receiveDatagramPacket(sock, bais, ois);
                 if (dp.isError()) {
                     PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.CRPT);
-                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
+                    // ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
                 } else if (dp.data.length == 0) {
                     flag = false;
                 } else if (seq != dp.seqno) {
                     PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, dp.seqno, PrintEachPacket.NOT_SEQ);
-                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
-                    seq++;
+                    // ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
+                    // seq++;
                 } else {
                     seq++;
                     ReceiverHelper.extractAndDeliver(fos, dp);

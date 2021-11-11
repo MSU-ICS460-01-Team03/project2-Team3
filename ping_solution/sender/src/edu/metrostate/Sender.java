@@ -45,9 +45,9 @@ public class Sender {
                 System.out.println(dp.seqno);
                 if (ack != null && !ack.isError() && ack.ackno == dp.seqno) {
                     dp = iter.next();
-                    if (errs.contains(dp.seqno)) {
-                        dp.cksum = 1;
-                    }
+                    // if (errs.contains(dp.seqno)) {
+                    // dp.cksum = 1;
+                    // }
                     PrintEachPacket.datagramSendPrint(PrintEachPacket.SENDING, dp.seqno, dp.seqno,
                             sp.packetSize * dp.seqno, PrintEachPacket.SENT);
                     SenderHelper.sendDatagramPacket(sock, dp, sp, bos, oos);

@@ -1,6 +1,7 @@
 package edu.metrostate;
 
 public class ReceiverParameter {
+    private static ReceiverParameter singleton;
 
     String filePath = System.getProperty("user.dir") + "/";
     String fileName = "panda.jpg";
@@ -11,12 +12,24 @@ public class ReceiverParameter {
     double percentError = 0.2;
     int packetSize = 500;
     int timeoutInterval = 2000;
+    int totalPacket = 0;
 
-    public ReceiverParameter(String[] args) throws ParameterException {
-        getArgs(args);
+    // private ReceiverParameter() throws ParameterException {
+    // if (getClass().getName().equals("ReceiverParameter"))
+    // throw new ParameterException();
+    // // getArgs(args);
+    // }
+
+    private ReceiverParameter() {
     }
 
-    private void getArgs(String[] args) throws ParameterException {
+    public static ReceiverParameter instance() {
+        if (singleton == null)
+            singleton = new ReceiverParameter();
+        return singleton;
+    }
+
+    public void getArgs(String[] args) throws ParameterException {
         if (args.length == 0) {
             return;
         }
@@ -50,8 +63,10 @@ public class ReceiverParameter {
 
     @Override
     public String toString() {
-        return "ReceiverParameter [filePath=" + filePath + ", percentError=" + percentError + ", receiverIpAddress="
-                + receiverIpAddress + ", receiverPort=" + receiverPort + "]";
+        return "ReceiverParameter [fileName=" + fileName + ", filePath=" + filePath + ", packetSize=" + packetSize
+                + ", percentError=" + percentError + ", receiverIpAddress=" + receiverIpAddress + ", receiverPort="
+                + receiverPort + ", senderIpAddress=" + senderIpAddress + ", senderPort=" + senderPort
+                + ", timeoutInterval=" + timeoutInterval + ", totalPacket=" + totalPacket + "]";
     }
 
 }

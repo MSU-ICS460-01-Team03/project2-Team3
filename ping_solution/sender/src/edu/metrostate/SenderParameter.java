@@ -1,21 +1,34 @@
 package edu.metrostate;
 
 public class SenderParameter {
+    private static SenderParameter singleton;
+
     String senderIpAddress = "localhost";
     int senderPort = 58972;
     String filePath = System.getProperty("user.dir") + "/";
-    String fileName = "rabbit.jpg";
+    String fileName = "cat.jpg";
     int packetSize = 500;
+    int totalPacket = 0;
     int timeoutInterval = 2000;
     String receiverIpAddress = "localhost";
     int receiverPort = 58973;
     double percentError = 0.25;
 
-    public SenderParameter(String[] args) throws ParameterException {
-        getArgs(args);
+    // public SenderParameter(String[] args) throws ParameterException {
+    // getArgs(args);
+    // }
+
+    private SenderParameter() {
+
     }
 
-    private void getArgs(String[] args) throws ParameterException {
+    public static SenderParameter instance() {
+        if (singleton == null)
+            singleton = new SenderParameter();
+        return singleton;
+    }
+
+    public void getArgs(String[] args) throws ParameterException {
         if (args.length == 0) {
             return;
         }

@@ -6,84 +6,58 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Receiver {
     public static void main(String[] args)
             throws IOException, ParameterException, ClassNotFoundException, InterruptedException {
-        ReceiverParameter sp = new ReceiverParameter(args);
-        // PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, 3,
-        // PrintEachPacket.RECV);
-        // PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, 3,
-        // PrintEachPacket.NOT_SEQ);
-        // System.out.println(sp);
+        ReceiverParameter sp = ReceiverParameter.instance();
+        sp.getArgs(args);
 
-        byte[] data = new byte[1024];
-        // System.out.println(sp);
         DatagramSocket sock = null;
         ByteArrayInputStream bais = null;
         ObjectInputStream ois = null;
         ByteArrayOutputStream bos = null;
         ObjectOutputStream oos = null;
         FileOutputStream fos = null;
-        InetAddress address = InetAddress.getByName(sp.senderIpAddress);
+
         try {
             sock = new DatagramSocket(sp.receiverPort);
-            String fileStr = sp.filePath + sp.fileName;
-            fos = new FileOutputStream(fileStr);
-
+            ReceiverHelper.receiveFirstData(sock, bais, ois);
+            List<Integer> errs = new ArrayList<Integer>();
+            List<Integer> drops = new ArrayList<Integer>();
+            ReceiverHelper.generateRandomErrDrop(errs, drops);
+            System.out.println(errs);
+            System.out.println(drops);
+            fos = new FileOutputStream(sp.filePath + sp.fileName);
             boolean flag = true;
-
+            int seq = 1;
             while (flag) {
 
-                DatagramPacket inPack = new DatagramPacket(data, data.length);
-                sock.receive(inPack);
-
-                byte[] recData = inPack.getData();
-                bais = new ByteArrayInputStream(recData);
-                ois = new ObjectInputStream(bais);
-                DataPacket dp = (DataPacket) ois.readObject();
-
-                if (dp.data.length != 0) {
-                    fos.write(dp.data, 0, dp.len - 12);
-                    fos.flush();
-                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.RECV);
-                } else {
+                DataPacket dp = ReceiverHelper.receiveDatagramPacket(sock, bais, ois);
+                if (dp.isError()) {
+                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.CRPT);
+                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
+                } else if (dp.data.length == 0) {
                     flag = false;
+                } else if (seq != dp.seqno) {
+                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, dp.seqno, PrintEachPacket.NOT_SEQ);
+                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
+                    seq++;
+                } else {
+                    seq++;
+                    ReceiverHelper.extractAndDeliver(fos, dp);
+                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.RECV);
+                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
                 }
 
-                AckPacket ack = new AckPacket((short) 8, dp.seqno);
-                bos = new ByteArrayOutputStream();
-                oos = new ObjectOutputStream(bos);
-                oos.writeObject(ack);
-                oos.flush();
-                byte[] sendData = bos.toByteArray();
-                DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.senderPort);
-                sock.send(sendPack);
-                PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.SENT);
-                Thread.sleep(25);
             }
 
             System.out.println("Received success!");
         } finally {
-
-            if (fos != null)
-                fos.close();
-            if (bais != null)
-                bais.close();
-            if (ois != null)
-                ois.close();
-            if (bos != null)
-                bos.close();
-            if (oos != null)
-                oos.close();
-            if (sock != null) {
-                sock.close();
-            } else {
-                sock = null;
-            }
+            ReceiverHelper.closeAll(sock, bos, oos, fos, bais, ois);
         }
 
     }

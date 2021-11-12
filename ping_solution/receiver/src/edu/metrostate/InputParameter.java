@@ -1,7 +1,7 @@
 package edu.metrostate;
 
-public class ReceiverParameter {
-    private static ReceiverParameter singleton;
+public class InputParameter {
+    private static InputParameter singleton;
 
     String filePath = System.getProperty("user.dir") + "/";
     String fileName = "panda.jpg";
@@ -14,16 +14,16 @@ public class ReceiverParameter {
     int timeoutInterval = 2000;
     int totalPacket = 0;
 
-    private ReceiverParameter() {
+    private InputParameter() {
     }
 
-    public static ReceiverParameter instance() {
+    public static InputParameter instance() {
         if (singleton == null)
-            singleton = new ReceiverParameter();
+            singleton = new InputParameter();
         return singleton;
     }
 
-    public void getArgs(String[] args) throws ParameterException {
+    public void getArgs(String[] args) throws InputException {
         if (args.length == 0) {
             return;
         }
@@ -33,25 +33,25 @@ public class ReceiverParameter {
                 percentError = Double.parseDouble(args[1]);
             } else {
 
-                throw new ParameterException("Type wrong -d  percent drop: " + args[1]);
+                throw new InputException("Type wrong -d  percent drop: " + args[1]);
             }
         }
         if (args.length == 4) {
             if (args[3].matches("\\d+")) {
                 receiverPort = Integer.parseInt(args[3]);
             } else {
-                throw new ParameterException("Type port number wrong format: " + args[3]);
+                throw new InputException("Type port number wrong format: " + args[3]);
             }
             if (args[2].matches("\\d{1,3}:\\d{1,3}:\\d{1,3}:\\d{1,3}")) {
                 receiverIpAddress = args[2];
             } else if (args[2].matches("localhost")) {
                 receiverIpAddress = "localhost";
             } else {
-                throw new ParameterException("Type receiver ip address wrong format: " + args[2]);
+                throw new InputException("Type receiver ip address wrong format: " + args[2]);
             }
             return;
         }
-        throw new ParameterException("Type wrong command line!");
+        throw new InputException("Type wrong command line!");
 
     }
 

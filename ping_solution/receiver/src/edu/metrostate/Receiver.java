@@ -10,10 +10,10 @@ import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Receiver {
+public class Receiver extends Helper {
     public static void main(String[] args)
-            throws IOException, ParameterException, ClassNotFoundException, InterruptedException {
-        ReceiverParameter sp = ReceiverParameter.instance();
+            throws IOException, InputException, ClassNotFoundException, InterruptedException {
+        InputParameter sp = InputParameter.instance();
         sp.getArgs(args);
 
         DatagramSocket sock = null;
@@ -25,47 +25,49 @@ public class Receiver {
 
         try {
             sock = new DatagramSocket(sp.receiverPort);
-            ReceiverHelper.receiveFirstData(sock, bais, ois);
+            System.out.println(">>>>>>>>>>>>>>>>>\nWaiting for receiving a file.....");
+            receiveFirstData(sock, bais, ois);
             List<Integer> errs = new ArrayList<Integer>();
             List<Integer> drops = new ArrayList<Integer>();
-            ReceiverHelper.generateRandomErrDrop(errs, drops);
+            generateRandomErrDrop(errs, drops);
             fos = new FileOutputStream(sp.filePath + sp.fileName);
             boolean flag = true;
             int seq = 1;
             while (flag) {
-                DataPacket dp = ReceiverHelper.receiveDatagramPacket(sock, bais, ois);
+                DataPacket dp = receiveDatagramPacket(sock, bais, ois);
                 AckPacket ack = new AckPacket((short) 8, dp.seqno);
                 if (dp.isError()) {
-                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.CRPT);
+                    datagramReceivedPrint(RECV, dp.seqno, CRPT);
                 } else if (dp.data.length == 0) {
                     flag = false;
                 } else if (seq != dp.seqno) {
-                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, dp.seqno, PrintEachPacket.NOT_SEQ);
-                    ReceiverHelper.sendAck(sock, bos, oos, ack);
+                    datagramReceivedPrint(DUPL, dp.seqno, NOT_SEQ);
+                    sendAck(sock, bos, oos, ack);
                 } else {
                     seq++;
-                    ReceiverHelper.extractAndDeliver(fos, dp);
-                    PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.RECV);
+                    extractAndDeliver(fos, dp);
+                    datagramReceivedPrint(RECV, dp.seqno, RECV);
                     if (errs.contains(dp.seqno)) {
                         errs.remove(errs.indexOf(dp.seqno));
                         ack.cksum = 1;
-                        ReceiverHelper.sendAck(sock, bos, oos, ack);
-                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.CRPT);
+                        sendAck(sock, bos, oos, ack);
+                        ackSentPrint(ack.ackno, CRPT);
                     } else if (drops.contains(dp.seqno)) {
                         drops.remove(drops.indexOf(dp.seqno));
-                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.DROP);
+                        ackSentPrint(ack.ackno, DROP);
                         ack.ackno = ack.ackno - 1;
-                        ReceiverHelper.sendAck(sock, bos, oos, ack);
+                        sendAck(sock, bos, oos, ack);
                         continue;
                     } else {
-                        ReceiverHelper.sendAck(sock, bos, oos, ack);
-                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.SENT);
+                        sendAck(sock, bos, oos, ack);
+                        ackSentPrint(ack.ackno, SENT);
                     }
                 }
             }
             System.out.println("Received success!");
         } finally {
-            ReceiverHelper.closeAll(sock, bos, oos, fos, bais, ois);
+            closeAll(sock, bos, oos, fos, bais, ois);
+            System.out.println("Receiver Program Terminated!");
         }
 
     }

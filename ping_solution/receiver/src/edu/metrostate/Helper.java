@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class ReceiverHelper {
+public class Helper extends Print {
     public static void receiveFirstData(DatagramSocket sock, ByteArrayInputStream bais, ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
-        ReceiverParameter sp = ReceiverParameter.instance();
+        InputParameter sp = InputParameter.instance();
         byte[] data = new byte[1024];
         DatagramPacket inPack = new DatagramPacket(data, data.length);
         sock.receive(inPack);
@@ -32,7 +32,7 @@ public class ReceiverHelper {
     }
 
     public static void generateRandomErrDrop(List<Integer> errs, List<Integer> drops) {
-        ReceiverParameter sp = ReceiverParameter.instance();
+        InputParameter sp = InputParameter.instance();
         Random random = new Random();
         int errDrop = (int) ((sp.totalPacket / 2) * sp.percentError);
         for (int i = 0; i < errDrop; i++) {
@@ -60,7 +60,7 @@ public class ReceiverHelper {
 
     public static void sendAck(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos, AckPacket ack)
             throws IOException {
-        ReceiverParameter sp = ReceiverParameter.instance();
+        InputParameter sp = InputParameter.instance();
         bos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(bos);
         oos.writeObject(ack);

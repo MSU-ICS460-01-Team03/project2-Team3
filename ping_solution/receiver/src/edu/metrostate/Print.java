@@ -1,6 +1,6 @@
 package edu.metrostate;
 
-public class PrintEachPacket {
+public class Print {
     public static final String RECV = "RECV";
     public static final String DUPL = "DUPL";
     public static final String NOT_SEQ = "!Seq";

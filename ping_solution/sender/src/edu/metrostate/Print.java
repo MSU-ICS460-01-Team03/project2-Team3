@@ -1,6 +1,6 @@
 package edu.metrostate;
 
-public class PrintEachPacket {
+public class Print {
     public static final String SENDING = "SENDing";
     public static final String SENT = "SENT";
     public static final String DROP = "DROP";
@@ -12,7 +12,7 @@ public class PrintEachPacket {
 
     public static void datagramSendPrint(String packetStatus, int seqNum, String status) {
         long time = System.currentTimeMillis();
-        SenderParameter sp = SenderParameter.instance();
+        InputParameter sp = InputParameter.instance();
         String str = String.format("%s %3d %5d:%-5d %13d %s", packetStatus, seqNum, (seqNum - 1) * sp.packetSize,
                 seqNum * sp.packetSize, time, status);
         System.out.println(str);

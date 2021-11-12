@@ -1,5 +1,11 @@
 package edu.metrostate;
 
+
+/**
+ * @author 
+ *
+ */
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -15,7 +21,7 @@ import java.util.Random;
 
 public class Helper extends Print {
     @SuppressWarnings("unchecked")
-    public static void receiveFirstData(DatagramSocket sock, ByteArrayInputStream bais, ObjectInputStream ois)
+	public static void receiveFirstData(DatagramSocket sock, ByteArrayInputStream bais, ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
         InputParameter parameter = InputParameter.instance();
         byte[] data = new byte[1024];

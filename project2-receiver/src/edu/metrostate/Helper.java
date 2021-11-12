@@ -51,14 +51,7 @@ public class Helper extends Print {
 
     public static DataPacket receiveDatagramPacket(DatagramSocket sock, ByteArrayInputStream bais,
             ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        byte[] data = new byte[1024];
-        DatagramPacket inPack = new DatagramPacket(data, data.length);
-        sock.receive(inPack);
-        byte[] recData = inPack.getData();
-        bais = new ByteArrayInputStream(recData);
-        ois = new ObjectInputStream(bais);
-        DataPacket dataPacket = (DataPacket) ois.readObject();
-        return dataPacket;
+  //implement .
     }
 
     public static void extractAndDeliver(FileOutputStream fos, DataPacket dataPacket) throws IOException {
@@ -68,15 +61,7 @@ public class Helper extends Print {
 
     public static void sendAck(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos, AckPacket ack)
             throws IOException {
-        InputParameter parameter = InputParameter.instance();
-        bos = new ByteArrayOutputStream();
-        oos = new ObjectOutputStream(bos);
-        oos.writeObject(ack);
-        oos.flush();
-        byte[] sendData = bos.toByteArray();
-        InetAddress address = InetAddress.getByName(parameter.senderIpAddress);
-        DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, parameter.senderPort);
-        sock.send(sendPack);
+    
     }
 
     public static void closeAll(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos,

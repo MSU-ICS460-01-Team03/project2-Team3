@@ -17,15 +17,11 @@ public class Print {
     public static final String SENDing = "SENDing";
 
     public static void datagramReceivedPrint(String packetStatus, int seqNum, String status) {
-        long time = System.currentTimeMillis();
-        String str = String.format("%s %13d %3d %s", packetStatus, time, seqNum, status);
-        System.out.println(str);
+      
     }
 
     public static void ackSentPrint(int seqNum, String status) {
-        long time = System.currentTimeMillis();
-        String str = String.format("SENDing ACK %3d %13d %s", seqNum, time, status);
-        System.out.println(str);
+    
     }
 }
 

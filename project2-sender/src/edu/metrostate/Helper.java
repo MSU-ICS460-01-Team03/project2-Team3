@@ -78,35 +78,13 @@ public class Helper extends Print {
 
     public static void sendDatagramPacket(DatagramSocket sock, DataPacket dp, ByteArrayOutputStream bos,
             ObjectOutputStream oos) throws IOException {
-        InputParameter sp = InputParameter.instance();
-        bos = new ByteArrayOutputStream();
-        oos = new ObjectOutputStream(bos);
-        oos.writeObject(dp);
-        oos.flush();
-        byte[] sendData = bos.toByteArray();
-        DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length,
-                InetAddress.getByName(sp.receiverIpAddress), sp.receiverPort);
-        sock.send(sendPack);
+
 
     }
 
     public static AckPacket receiveAck(DatagramSocket sock, ByteArrayInputStream bais, ObjectInputStream ois)
             throws IOException, ClassNotFoundException {
-        InputParameter sp = InputParameter.instance();
-        byte[] data = new byte[sp.packetSize];
-        DatagramPacket inPack = new DatagramPacket(data, data.length);
-        try {
 
-            sock.receive(inPack);
-        } catch (SocketTimeoutException ste) {
-
-            return null;
-        }
-        byte[] recData = inPack.getData();
-        bais = new ByteArrayInputStream(recData);
-        ois = new ObjectInputStream(bais);
-        AckPacket ack = (AckPacket) ois.readObject();
-        return ack;
     }
 
     public static void closeAll(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos,

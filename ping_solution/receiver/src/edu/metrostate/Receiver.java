@@ -29,32 +29,40 @@ public class Receiver {
             List<Integer> errs = new ArrayList<Integer>();
             List<Integer> drops = new ArrayList<Integer>();
             ReceiverHelper.generateRandomErrDrop(errs, drops);
-            System.out.println(errs);
-            System.out.println(drops);
             fos = new FileOutputStream(sp.filePath + sp.fileName);
             boolean flag = true;
             int seq = 1;
             while (flag) {
-
                 DataPacket dp = ReceiverHelper.receiveDatagramPacket(sock, bais, ois);
+                AckPacket ack = new AckPacket((short) 8, dp.seqno);
                 if (dp.isError()) {
                     PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.CRPT);
-                    // ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
                 } else if (dp.data.length == 0) {
                     flag = false;
                 } else if (seq != dp.seqno) {
                     PrintEachPacket.datagramReceivedPrint(PrintEachPacket.DUPL, dp.seqno, PrintEachPacket.NOT_SEQ);
-                    // ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
-                    // seq++;
+                    ReceiverHelper.sendAck(sock, bos, oos, ack);
                 } else {
                     seq++;
                     ReceiverHelper.extractAndDeliver(fos, dp);
                     PrintEachPacket.datagramReceivedPrint(PrintEachPacket.RECV, dp.seqno, PrintEachPacket.RECV);
-                    ReceiverHelper.sendAck(sock, bos, oos, dp.seqno, 0);
+                    if (errs.contains(dp.seqno)) {
+                        errs.remove(errs.indexOf(dp.seqno));
+                        ack.cksum = 1;
+                        ReceiverHelper.sendAck(sock, bos, oos, ack);
+                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.CRPT);
+                    } else if (drops.contains(dp.seqno)) {
+                        drops.remove(drops.indexOf(dp.seqno));
+                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.DROP);
+                        ack.ackno = ack.ackno - 1;
+                        ReceiverHelper.sendAck(sock, bos, oos, ack);
+                        continue;
+                    } else {
+                        ReceiverHelper.sendAck(sock, bos, oos, ack);
+                        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.SENT);
+                    }
                 }
-
             }
-
             System.out.println("Received success!");
         } finally {
             ReceiverHelper.closeAll(sock, bos, oos, fos, bais, ois);

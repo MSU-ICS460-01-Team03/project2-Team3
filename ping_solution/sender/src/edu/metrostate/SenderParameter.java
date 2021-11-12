@@ -6,17 +6,13 @@ public class SenderParameter {
     String senderIpAddress = "localhost";
     int senderPort = 58972;
     String filePath = System.getProperty("user.dir") + "/";
-    String fileName = "cat.jpg";
+    String fileName = "test.pdf";
     int packetSize = 500;
     int totalPacket = 0;
     int timeoutInterval = 2000;
     String receiverIpAddress = "localhost";
     int receiverPort = 58973;
     double percentError = 0.25;
-
-    // public SenderParameter(String[] args) throws ParameterException {
-    // getArgs(args);
-    // }
 
     private SenderParameter() {
 

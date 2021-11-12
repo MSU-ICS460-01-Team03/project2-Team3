@@ -14,12 +14,6 @@ public class ReceiverParameter {
     int timeoutInterval = 2000;
     int totalPacket = 0;
 
-    // private ReceiverParameter() throws ParameterException {
-    // if (getClass().getName().equals("ReceiverParameter"))
-    // throw new ParameterException();
-    // // getArgs(args);
-    // }
-
     private ReceiverParameter() {
     }
 

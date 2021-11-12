@@ -18,14 +18,14 @@ import java.util.Map;
 import java.util.Random;
 
 public class SenderHelper {
-    public static List<DataPacket> makePacketList(SenderParameter sp) throws IOException {
+    public static List<DataPacket> makePacketList() throws IOException {
+        SenderParameter sp = SenderParameter.instance();
         String fileStr = sp.filePath + sp.fileName;
         File myFile = null;
         FileInputStream fis = null;
         try {
             myFile = new File(fileStr);
             fis = new FileInputStream(myFile);
-
             List<DataPacket> sendPacks = new ArrayList<>();
             byte[] data = new byte[sp.packetSize];
             int i = 1;
@@ -45,20 +45,19 @@ public class SenderHelper {
         return null;
     }
 
-    public static void generateRandomErrDropTimeOut(SenderParameter sp, List<Integer> errs, List<Integer> drops,
-            List<Integer> timeOuts) {
+    public static void generateRandomErrDropTimeOut(List<Integer> errs, List<Integer> drops) {
+        SenderParameter sp = SenderParameter.instance();
         Random random = new Random();
-        int errDrop = (int) ((sp.totalPacket / 3) * sp.percentError);
+        int errDrop = (int) ((sp.totalPacket / 2) * sp.percentError);
         for (int i = 0; i < errDrop; i++) {
-            errs.add(random.nextInt(sp.totalPacket - 1) + 1);
-            drops.add(random.nextInt(sp.totalPacket - 1) + 1);
-            timeOuts.add(random.nextInt(sp.totalPacket - 1) + 1);
+            errs.add(random.nextInt(sp.totalPacket - 2) + 2);
+            drops.add(random.nextInt(sp.totalPacket - 2) + 2);
         }
-
     }
 
-    public static void sendHeadPacket(SenderParameter sp, int sendPacksSize, DatagramSocket sock,
-            ByteArrayOutputStream bos, ObjectOutputStream oos) throws IOException {
+    public static void sendHeadPacket(int sendPacksSize, DatagramSocket sock, ByteArrayOutputStream bos,
+            ObjectOutputStream oos) throws IOException {
+        SenderParameter sp = SenderParameter.instance();
         Map<String, Integer> headPacket = new HashMap<>();
         headPacket.put(sp.fileName, sendPacksSize);
         bos = new ByteArrayOutputStream();
@@ -69,11 +68,12 @@ public class SenderHelper {
         DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length,
                 InetAddress.getByName(sp.receiverIpAddress), sp.receiverPort);
         sock.send(sendPack);
-        System.out.println("SENDing file name: " + sp.fileName + ", with total: " + sendPacksSize + " packets");
+        System.out.println("Start Sending file name: " + sp.fileName + ", with total: " + sendPacksSize + " packets");
     }
 
-    public static void sendDatagramPacket(DatagramSocket sock, DataPacket dp, SenderParameter sp,
-            ByteArrayOutputStream bos, ObjectOutputStream oos) throws IOException {
+    public static void sendDatagramPacket(DatagramSocket sock, DataPacket dp, ByteArrayOutputStream bos,
+            ObjectOutputStream oos) throws IOException {
+        SenderParameter sp = SenderParameter.instance();
         bos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(bos);
         oos.writeObject(dp);
@@ -85,14 +85,16 @@ public class SenderHelper {
 
     }
 
-    public static AckPacket receiveAck(DatagramSocket sock, SenderParameter sp, ByteArrayInputStream bais,
-            ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    public static AckPacket receiveAck(DatagramSocket sock, ByteArrayInputStream bais, ObjectInputStream ois)
+            throws IOException, ClassNotFoundException {
+        SenderParameter sp = SenderParameter.instance();
         byte[] data = new byte[sp.packetSize];
         DatagramPacket inPack = new DatagramPacket(data, data.length);
         try {
 
             sock.receive(inPack);
         } catch (SocketTimeoutException ste) {
+
             return null;
         }
         byte[] recData = inPack.getData();

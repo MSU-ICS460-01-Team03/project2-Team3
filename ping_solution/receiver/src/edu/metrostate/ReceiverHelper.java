@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-// import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -29,19 +28,17 @@ public class ReceiverHelper {
             sp.fileName = e.getKey();
             sp.totalPacket = e.getValue();
         }
-        System.out.println("Receive file name: " + sp.fileName + ", with total: " + sp.totalPacket + " packets");
+        System.out.println("Start receive file name: " + sp.fileName + ", with total: " + sp.totalPacket + " packets");
     }
 
     public static void generateRandomErrDrop(List<Integer> errs, List<Integer> drops) {
         ReceiverParameter sp = ReceiverParameter.instance();
-        System.out.println("null?" + sp);
         Random random = new Random();
         int errDrop = (int) ((sp.totalPacket / 2) * sp.percentError);
         for (int i = 0; i < errDrop; i++) {
-            errs.add(random.nextInt(sp.totalPacket - 1) + 1);
-            drops.add(random.nextInt(sp.totalPacket - 1) + 1);
+            errs.add(random.nextInt(sp.totalPacket - 2) + 2);
+            drops.add(random.nextInt(sp.totalPacket - 2) + 2);
         }
-
     }
 
     public static DataPacket receiveDatagramPacket(DatagramSocket sock, ByteArrayInputStream bais,
@@ -59,14 +56,11 @@ public class ReceiverHelper {
     public static void extractAndDeliver(FileOutputStream fos, DataPacket dp) throws IOException {
         fos.write(dp.data, 0, dp.len - 12);
         fos.flush();
-
     }
 
-    public static void sendAck(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos, int seqno,
-            int cksum) throws IOException {
+    public static void sendAck(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos, AckPacket ack)
+            throws IOException {
         ReceiverParameter sp = ReceiverParameter.instance();
-        AckPacket ack = new AckPacket((short) 8, seqno);
-        ack.cksum = (short) cksum;
         bos = new ByteArrayOutputStream();
         oos = new ObjectOutputStream(bos);
         oos.writeObject(ack);
@@ -75,7 +69,6 @@ public class ReceiverHelper {
         InetAddress address = InetAddress.getByName(sp.senderIpAddress);
         DatagramPacket sendPack = new DatagramPacket(sendData, sendData.length, address, sp.senderPort);
         sock.send(sendPack);
-        PrintEachPacket.ackSentPrint(ack.ackno, PrintEachPacket.SENT);
     }
 
     public static void closeAll(DatagramSocket sock, ByteArrayOutputStream bos, ObjectOutputStream oos,

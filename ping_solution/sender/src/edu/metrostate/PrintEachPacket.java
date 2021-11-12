@@ -10,11 +10,11 @@ public class PrintEachPacket {
     public static final String ErrAck = "ErrAck";
     public static final String DuplAck = "DuplAck";
 
-    public static void datagramSendPrint(String packetStatus, int seqNum, int startByteOffset, int endByteOffset,
-            String status) {
+    public static void datagramSendPrint(String packetStatus, int seqNum, String status) {
         long time = System.currentTimeMillis();
-        String str = String.format("%s %3d %5d:%-5d %13d %s", packetStatus, seqNum, startByteOffset, endByteOffset,
-                time, status);
+        SenderParameter sp = SenderParameter.instance();
+        String str = String.format("%s %3d %5d:%-5d %13d %s", packetStatus, seqNum, (seqNum - 1) * sp.packetSize,
+                seqNum * sp.packetSize, time, status);
         System.out.println(str);
     }
 

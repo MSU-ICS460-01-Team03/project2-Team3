@@ -104,7 +104,7 @@ public class Sender extends Helper {
                 }
             }
             // when finish sending all packet without no problem,
-            // sending the last data packet for telling receiver terminate the server.
+            // sending the last data packet for telling receiver server terminate.
             dataPacket = new DataPacket((short) 0, 0, 0, new byte[0]);
             sendDatagramPacket(sock, dataPacket, bos, oos);
             /////////////////

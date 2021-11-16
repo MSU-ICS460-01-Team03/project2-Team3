@@ -1,5 +1,11 @@
 package edu.metrostate;
 
+/**
+ * ICS460-01 Fall2021, Project 2, stop and wait, sender program - client side.
+ * Instructor: Damodar Chetty
+ * Write by Team #3: 
+ * 		 Nalongsone Danddank	
+ */
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -44,8 +50,8 @@ public class Sender extends Helper {
             sendHeadPacket(sendPacks.size(), sock, bos, oos);
 
             // Follow by user input percentage (-d),
-            // build the random number list of packet index for error and drop,
-            // for simulating sending packet error, drop, time out,
+            // build the random number list of data packet index for error and drop,
+            // for simulating situation sending packet error, drop, time out,
             List<Integer> errs = new ArrayList<Integer>();
             List<Integer> drops = new ArrayList<Integer>();
             generateRandomErrDrop(errs, drops);
@@ -61,11 +67,13 @@ public class Sender extends Helper {
             // Looping util every sending packet done.
             while (iter.hasNext()) {
                 // waiting for receive ack packet.
+                // if ack get null that mean time out, and resend data packet again.
                 AckPacket ack = receiveAck(sock, bais, ois);
                 if (ack != null && !ack.isError() && ack.ackno == dataPacket.seqno) {
                     // when received ack without any problem, then move to next window
                     ackReceivedPrint(ack.ackno, MoveWnd);
                     dataPacket = iter.next();
+                    ///////////
                     // As having simulated some data packet must drop, error, and time ou,
                     // so if any data packet's seqno match to a number in the those list,
                     // the packet must follow by simulating, then waiting for resend data packet

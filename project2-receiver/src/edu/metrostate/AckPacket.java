@@ -1,12 +1,14 @@
 package edu.metrostate;
 
 /**
- * @author 
- *
+ * ICS460-01 Fall2021, Project 2, stop and wait, Receiver program - server side.
+ * Instructor: Damodar Chetty
+ * Write by Team #3: 
+ * 		 Nalongsone Danddank	
  */
-
 import java.io.Serializable;
 
+// AckPacket class to send back to sender progream, to confirm or tell sender.
 public class AckPacket implements Serializable {
     private static final long serialVersionUID = 1L;
     short cksum; // 16-bit 2-byte
@@ -19,6 +21,7 @@ public class AckPacket implements Serializable {
         generateCksum();
     }
 
+    // to generate check sum and set to cksum.
     protected void generateCksum() {
         short nob = (short) ((Math.floor(Math.log(len) / Math.log(2))) + 1);
         cksum += (short) (((1 << nob) - 1) ^ len);
@@ -26,6 +29,7 @@ public class AckPacket implements Serializable {
         cksum += (short) (((1 << nob) - 1) ^ ackno);
     }
 
+    // to tell the ack packet is error or not.
     public boolean isError() {
         if (cksum == 0)
             return false;

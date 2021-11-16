@@ -1,15 +1,15 @@
-/**
- * 
- */
 package edu.metrostate;
 
 /**
- * @author 
- *
+ * ICS460-01 Fall2021, Project 2, stop and wait, sender program - client side.
+ * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank
  */
+// singleton class create for get the parameters from user input by command line
+// and some other parameter that need to use on the entry program.
 public class InputParameter {
     private static InputParameter singleton;
 
+    // initilize default to all parameter if user input nothing.
     String senderIpAddress = "localhost";
     int senderPort = 58972;
     String filePath = System.getProperty("user.dir") + "/";
@@ -22,19 +22,20 @@ public class InputParameter {
     double percentError = 0.25;
 
     private InputParameter() {
-
     }
 
+    // create only one instance object to use for entry program.
     public static InputParameter instance() {
         if (singleton == null)
             singleton = new InputParameter();
         return singleton;
     }
 
+    // processing get argument from user input by command line. and if user typing
+    // wrong than throw an InputException.
     public void getArgs(String[] args) throws InputException {
-        if (args.length == 0) {
+        if (args.length == 0)
             return;
-        }
         if (args.length == 1) {
             if (args[0].matches(".+\\.\\w+")) {
                 fileName = args[0];

@@ -1,12 +1,12 @@
 package edu.metrostate;
 
 /**
- * @author 
- *
+ * ICS460-01 Fall2021, Project 2, stop and wait, Receiver program - server side.
+ * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank
  */
-
 import java.util.Arrays;
 
+// Data Packet class for collect the byte array and create the sequeue number to be a object packet.
 public class DataPacket extends AckPacket {
     private static final long serialVersionUID = 1L;
 

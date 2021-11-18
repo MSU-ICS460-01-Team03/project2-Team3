@@ -2,7 +2,7 @@ package edu.metrostate;
 
 /**
  * ICS460-01 Fall2021, Project 2, stop and wait, Receiver program - server side.
- * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank
+ * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank, Asha Hassan
  */
 // singleton class create for get the parameters from user input by command line
 // and some other parameter that need to use on the entry program.

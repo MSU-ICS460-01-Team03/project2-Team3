@@ -2,7 +2,7 @@ package edu.metrostate;
 
 /**
  * ICS460-01 Fall2021, Project 2, stop and wait, sender program - client side.
- * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank
+ * Instructor: Damodar Chetty Write by Team #3: Nalongsone Danddank, Asha Hassan
  */
 // to helping print out each packet.
 public class Print {
